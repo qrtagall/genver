@@ -13,7 +13,7 @@
         const hostname = window.location.hostname;
         const epochHour = Math.floor(Date.now() / (1000 * 60 * 60));
         const input = hostname + epochHour;
-        // console.log("[Proxy] seed>>>", input);
+         console.log("[Proxy] seed>>>", input);
 
         const encoder = new TextEncoder();
         const data = encoder.encode(input);
@@ -29,6 +29,7 @@
     async function isValidCCPubKey(providedKey) {
     
     const dynamicKey = await generateCCCKey(); // dynamic key generated now
+       console.log("[Proxy] val>>>", dynamicKey);
     
     return providedKey === staticKey || providedKey === dynamicKey;
 }
