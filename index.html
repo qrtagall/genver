@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QR Proxy Debug V1</title>
+  <script>
+    const scriptBaseUrl = "https://script.google.com/macros/s/AKfycby08RLn_fppLzw1KrZ3PX7AVR2npGhq5JZM7nYrQZBqKrEqaxVzL0zOuWcq59tYkFEM/exec";
+    const token = "qrtagallApril2025"; // ✅ Confirm this matches Apps Script
+
+    async function generateQR(timestamp) {
+      const url = `${scriptBaseUrl}?action=generate&token=${token}&timestamp=${encodeURIComponent(timestamp)}`;
+      console.log("[Proxy] Generating QR with URL:", url);
+      try {
+        const res = await fetch(url);
+        //console.log("[Proxy] Fetch Response Status:", res.status);
+        const text = await res.text();
+        //console.log("[Proxy] Fetch Response Body:", text);
+        window.parent.postMessage({ type: "qr_generated", id: text }, "*");
+      } catch (err) {
+        //console.error("[Proxy] Fetch Error:", err);
+        window.parent.postMessage({ type: "qr_error", error: err.message }, "*");
+      }
+    }
+
+    async function verifyQR(id) {
+      const url = `${scriptBaseUrl}?action=verify&token=${token}&id=${encodeURIComponent(id)}`;
+      //console.log("[Proxy] Verifying QR with URL:", url);
+      try {
+        const res = await fetch(url);
+        //console.log("[Proxy] Fetch Response Status:", res.status);
+        const text = await res.text();
+        //console.log("[Proxy] Fetch Response Body:", text);
+        window.parent.postMessage({ type: "qr_verified", result: text }, "*");
+      } catch (err) {
+        //console.error("[Proxy] Fetch Error:", err);
+        window.parent.postMessage({ type: "qr_error", error: err.message }, "*");
+      }
+    }
+
+    window.addEventListener("message", (event) => {
+      //console.log("[Proxy] Message received:", event.data);
+      if (!event.data || !event.data.type) return;
+      if (event.data.type === "generate") {
+        generateQR(event.data.timestamp);
+      } else if (event.data.type === "verify") {
+        verifyQR(event.data.id);
+      }
+    });
+  </script>
+</head>
+<body style="margin:0; background:#fff;">
+  <div style="font-size:10px; color:#aaa;">QR Proxy Debug Mode</div>
+</body>
+</html>
