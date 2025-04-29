@@ -6,12 +6,30 @@
   <script>
     const scriptBaseUrl = "https://script.google.com/macros/s/AKfycby08RLn_fppLzw1KrZ3PX7AVR2npGhq5JZM7nYrQZBqKrEqaxVzL0zOuWcq59tYkFEM/exec";
     const token = "qrtagallApril2025"; // Make sure matches backend!
-    const staticKey = "12345678901234567890123456789012"; // Static 32-byte key
+    const staticKey = "chandanmaity"; // Static 32-byte key
+
+      async function generateCCCKey() {
+        const hostname = window.location.hostname;
+        const epochHour = Math.floor(Date.now() / (1000 * 60 * 60));
+        const input = hostname + epochHour;
+
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashHex = Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+        return hashHex; // 64-character hex string
+    }
 
     // ✅ Utility: Validate key
-    function isValidCCPubKey(providedKey) {
-      return providedKey === staticKey;
-    }
+    async function isValidCCPubKey(providedKey) {
+    
+    const dynamicKey = await g3n3r4t3_CCCK(); // dynamic key generated now
+
+    return providedKey === staticKey || providedKey === dynamicKey;
+}
 
     async function generateQR(timestamp, providedKey) {
       if (!isValidCCPubKey(providedKey)) {
