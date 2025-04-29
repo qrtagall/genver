@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QR Proxy</title>
+  <script>
+    const scriptBaseUrl = "https://script.google.com/macros/s/AKfycby08RLn_fppLzw1KrZ3PX7AVR2npGhq5JZM7nYrQZBqKrEqaxVzL0zOuWcq59tYkFEM/exec";
+    const token = "qrtagallApril2025";
+
+    async function generateQR(timestamp) {
+      const url = `${scriptBaseUrl}?action=generate&token=${token}&timestamp=${encodeURIComponent(timestamp)}`;
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        window.parent.postMessage({ type: "qr_generated", id: text }, "*");
+      } catch (err) {
+        window.parent.postMessage({ type: "qr_error", error: err.message }, "*");
+      }
+    }
+
+    async function verifyQR(id) {
+      const url = `${scriptBaseUrl}?action=verify&token=${token}&id=${encodeURIComponent(id)}`;
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        window.parent.postMessage({ type: "qr_verified", result: text }, "*");
+      } catch (err) {
+        window.parent.postMessage({ type: "qr_error", error: err.message }, "*");
+      }
+    }
+
+    // Listen for messages from parent (qrtagall.com)
+    window.addEventListener("message", (event) => {
+      if (!event.data || !event.data.type) return;
+      if (event.data.type === "generate") {
+        generateQR(event.data.timestamp);
+      } else if (event.data.type === "verify") {
+        verifyQR(event.data.id);
+      }
+    });
+  </script>
+</head>
+<body style="margin:0; background:#fff;"></body>
+</html>
