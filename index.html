@@ -32,7 +32,10 @@
 }
 
     async function generateQR(timestamp, providedKey) {
-      if (!isValidCCPubKey(providedKey)) {
+
+      const valid = await isValidCCPubKey(providedKey); 
+      
+      if (!valid) {
         console.error("[Proxy] Invalid CCPubKey!");
         window.parent.postMessage({ type: "qr_error", error: "Invalid CCPubKey" }, "*");
         return;
@@ -52,7 +55,8 @@
     }
 
     async function verifyQR(id, providedKey) {
-      if (!isValidCCPubKey(providedKey)) {
+        const valid = await isValidCCPubKey(providedKey); 
+      if (!valid) {
         console.error("[Proxy] Invalid CCPubKey!");
         window.parent.postMessage({ type: "qr_error", error: "Invalid CCPubKey" }, "*");
         return;
