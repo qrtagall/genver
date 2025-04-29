@@ -12,7 +12,8 @@
       async function generateCCCKey() {
         const hostname = window.location.hostname;
         const epochHour = Math.floor(Date.now() / (1000 * 60 * 60));
-        const input = hostname + epochHour;
+        const cleaned = hostname.replace(/^proxy\./, ""); 
+        const input = cleaned + epochHour;
          console.log("[Proxy] seed>>>", input);
 
         const encoder = new TextEncoder();
