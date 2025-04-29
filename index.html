@@ -2,53 +2,71 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>QR Proxy Debug V1</title>
+  <title>QR Proxy V2</title>
   <script>
     const scriptBaseUrl = "https://script.google.com/macros/s/AKfycby08RLn_fppLzw1KrZ3PX7AVR2npGhq5JZM7nYrQZBqKrEqaxVzL0zOuWcq59tYkFEM/exec";
-    const token = "qrtagallApril2025"; // ✅ Confirm this matches Apps Script
+    const token = "qrtagallApril2025"; // Make sure matches backend!
+    const staticKey = "12345678901234567890123456789012"; // Static 32-byte key
 
-    async function generateQR(timestamp) {
+    // ✅ Utility: Validate key
+    function isValidCCPubKey(providedKey) {
+      return providedKey === staticKey;
+    }
+
+    async function generateQR(timestamp, providedKey) {
+      if (!isValidCCPubKey(providedKey)) {
+        console.error("[Proxy] Invalid CCPubKey!");
+        window.parent.postMessage({ type: "qr_error", error: "Invalid CCPubKey" }, "*");
+        return;
+      }
+
       const url = `${scriptBaseUrl}?action=generate&token=${token}&timestamp=${encodeURIComponent(timestamp)}`;
-      console.log("[Proxy] Generating QR with URL:", url);
+      console.log("[Proxy] Fetching QR URL:", url);
       try {
         const res = await fetch(url);
-        //console.log("[Proxy] Fetch Response Status:", res.status);
         const text = await res.text();
-        //console.log("[Proxy] Fetch Response Body:", text);
+        console.log("[Proxy] Generated QR:", text);
         window.parent.postMessage({ type: "qr_generated", id: text }, "*");
       } catch (err) {
-        //console.error("[Proxy] Fetch Error:", err);
+        console.error("[Proxy] Fetch error:", err);
         window.parent.postMessage({ type: "qr_error", error: err.message }, "*");
       }
     }
 
-    async function verifyQR(id) {
+    async function verifyQR(id, providedKey) {
+      if (!isValidCCPubKey(providedKey)) {
+        console.error("[Proxy] Invalid CCPubKey!");
+        window.parent.postMessage({ type: "qr_error", error: "Invalid CCPubKey" }, "*");
+        return;
+      }
+
       const url = `${scriptBaseUrl}?action=verify&token=${token}&id=${encodeURIComponent(id)}`;
-      //console.log("[Proxy] Verifying QR with URL:", url);
+      console.log("[Proxy] Fetching verify URL:", url);
       try {
         const res = await fetch(url);
-        //console.log("[Proxy] Fetch Response Status:", res.status);
         const text = await res.text();
-        //console.log("[Proxy] Fetch Response Body:", text);
+        console.log("[Proxy] Verification result:", text);
         window.parent.postMessage({ type: "qr_verified", result: text }, "*");
       } catch (err) {
-        //console.error("[Proxy] Fetch Error:", err);
+        console.error("[Proxy] Fetch error:", err);
         window.parent.postMessage({ type: "qr_error", error: err.message }, "*");
       }
     }
 
+    // ✅ Main message listener
     window.addEventListener("message", (event) => {
-      //console.log("[Proxy] Message received:", event.data);
+      console.log("[Proxy] Message received:", event.data);
       if (!event.data || !event.data.type) return;
+
       if (event.data.type === "generate") {
-        generateQR(event.data.timestamp);
+        generateQR(event.data.timestamp, event.data.ccpubkey);
       } else if (event.data.type === "verify") {
-        verifyQR(event.data.id);
+        verifyQR(event.data.id, event.data.ccpubkey);
       }
     });
   </script>
 </head>
 <body style="margin:0; background:#fff;">
-  <div style="font-size:10px; color:#aaa;">QR Proxy Debug Mode</div>
+  <div style="font-size:10px; color:#aaa;">QR Proxy v1.0</div>
 </body>
 </html>
