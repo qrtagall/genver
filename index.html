@@ -26,7 +26,7 @@
     // ✅ Utility: Validate key
     async function isValidCCPubKey(providedKey) {
     
-    const dynamicKey = await g3n3r4t3_CCCK(); // dynamic key generated now
+    const dynamicKey = await generateCCCKey(); // dynamic key generated now
 
     return providedKey === staticKey || providedKey === dynamicKey;
 }
