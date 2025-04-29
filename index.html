@@ -39,7 +39,7 @@
       }
 
       const url = `${scriptBaseUrl}?action=generate&token=${token}&timestamp=${encodeURIComponent(timestamp)}`;
-      console.log("[Proxy] Fetching QR URL:", url);
+      //console.log("[Proxy] Fetching QR URL:", url);
       try {
         const res = await fetch(url);
         const text = await res.text();
