@@ -14,7 +14,7 @@
         const epochHour = Math.floor(Date.now() / (1000 * 60 * 60));
         const cleaned = hostname.replace(/^proxy\./, ""); 
         const input = cleaned + epochHour;
-         console.log("[Proxy] seed>>>", input);
+        // console.log("[Proxy] seed>>>", input);
 
         const encoder = new TextEncoder();
         const data = encoder.encode(input);
@@ -30,7 +30,7 @@
     async function isValidCCPubKey(providedKey) {
     
     const dynamicKey = await generateCCCKey(); // dynamic key generated now
-       console.log("[Proxy] val>>>", dynamicKey);
+       //console.log("[Proxy] val>>>", dynamicKey);
     
     return providedKey === staticKey || providedKey === dynamicKey;
 }
@@ -40,7 +40,7 @@
       const valid = await isValidCCPubKey(providedKey); 
       
       if (!valid) {
-        console.error("[Proxy] Invalid CCPubKey!");
+        //console.error("[Proxy] Invalid CCPubKey!");
         window.parent.postMessage({ type: "qr_error", error: "Invalid CCPubKey" }, "*");
         return;
       }
@@ -50,7 +50,7 @@
       try {
         const res = await fetch(url);
         const text = await res.text();
-        console.log("[Proxy] Generated QR:", text);
+        //console.log("[Proxy] Generated QR:", text);
         window.parent.postMessage({ type: "qr_generated", id: text }, "*");
       } catch (err) {
         console.error("[Proxy] Fetch error:", err);
@@ -81,7 +81,7 @@
 
     // ✅ Main message listener
     window.addEventListener("message", (event) => {
-      console.log("[Proxy] Message received:", event.data);
+      //console.log("[Proxy] Message received:", event.data);
       if (!event.data || !event.data.type) return;
 
       if (event.data.type === "generate") {
