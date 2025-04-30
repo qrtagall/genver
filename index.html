@@ -59,13 +59,15 @@
     }
 
     async function verifyQR(id, providedKey) {
-        const valid = await isValidCCPubKey(providedKey); 
+
+      /*
+      const valid = await isValidCCPubKey(providedKey); 
       if (!valid) {
         console.error("[Proxy] Invalid CCPubKey!");
         window.parent.postMessage({ type: "qr_error", error: "Invalid CCPubKey" }, "*");
         return;
       }
-
+      */
       const url = `${scriptBaseUrl}?action=verify&token=${token}&id=${encodeURIComponent(id)}`;
       console.log("[Proxy] Fetching verify URL:", url);
       try {
